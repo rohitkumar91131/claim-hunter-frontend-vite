@@ -24,13 +24,11 @@ export default function Home() {
 
             // 1. Capture Final State (In-flow)
             const state = {
-                parent: inputEl.parentNode,
-                nextSibling: inputEl.nextSibling,
                 rect: inputEl.getBoundingClientRect(),
-                cssText: inputEl.style.cssText
             };
 
             // 2. Set Initial State (Fixed Fullscreen)
+            // Ensure we set visibility to visible to avoid FOUC or black screen stuck
             gsap.set(inputEl, {
                 position: 'fixed',
                 top: 0,
@@ -40,22 +38,22 @@ export default function Home() {
                 zIndex: 100,
                 maxWidth: 'none',
                 margin: 0,
-                padding: '2rem', // Add some padding in fullscreen mode
-                backgroundColor: 'var(--color-background)', // Ensure background covers everything
-                borderRadius: 0
+                padding: '2rem',
+                backgroundColor: 'var(--color-background)',
+                borderRadius: 0,
+                opacity: 1, // Ensure visible
+                visibility: 'visible'
             });
 
             // Hide other elements initially
             gsap.set(heroEl, { opacity: 0, y: -20 });
-            // Note: Navbar is handled globally/separately, but we can try to influence it if it had a ref reachable here. 
-            // Since it's outside, we can target generic elements or just focus on what we have.
-            // Better: Use a global class or just animate what's here.
 
             // 3. Animate to Final State
             const tl = gsap.timeline({
                 defaults: { ease: 'power4.out' },
                 onComplete: () => {
                     // Cleanup inline styles to return to pure CSS flow
+                    // Critical: This MUST run to restore normal layout
                     gsap.set(inputEl, { clearProps: 'all' });
                 }
             });
