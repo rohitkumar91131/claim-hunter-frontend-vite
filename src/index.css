@@ -1,0 +1,57 @@
+@import "tailwindcss";
+
+@layer base {
+  :root {
+    /* Dark Theme (Default) */
+    --background: #0f0f0f;
+    --primary: #3b82f6;
+    --accent: #22c55e;
+    --danger: #ef4444;
+    --card: #1a1a1a;
+
+    --text-main: #ffffff;
+    --text-muted: #9ca3af;
+    /* Gray-400 */
+    --border: rgba(255, 255, 255, 0.1);
+  }
+
+  :root.light {
+    /* Light Theme Overrides */
+    --background: #fdfdfd;
+    --primary: #2563eb;
+    --accent: #16a34a;
+    --danger: #dc2626;
+    --card: #ffffff;
+
+    --text-main: #111827;
+    /* Gray-900 */
+    --text-muted: #4b5563;
+    /* Gray-600 */
+    --border: rgba(0, 0, 0, 0.1);
+  }
+}
+
+@theme {
+  --color-background: var(--background);
+  --color-primary: var(--primary);
+  --color-accent: var(--accent);
+  --color-danger: var(--danger);
+  --color-card: var(--card);
+
+  /* Semantic Text Colors */
+  --color-foreground: var(--text-main);
+  --color-muted: var(--text-muted);
+
+  --color-border-custom: var(--border);
+
+  --font-sans: Inter, system-ui, sans-serif;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--text-main);
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  transition: background-color 0.3s ease-in-out, color 0.3s ease-in-out;
+}
