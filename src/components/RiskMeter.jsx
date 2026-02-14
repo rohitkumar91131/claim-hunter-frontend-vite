@@ -1,17 +1,18 @@
 export default function RiskMeter({ score }) {
     const radius = 40;
+    const validScore = Number(score) || 0;
     const circumference = 2 * Math.PI * radius;
-    const offset = circumference - (score / 100) * circumference;
+    const offset = circumference - (validScore / 100) * circumference;
 
     // Determine color based on score
     let colorClass = "text-green-500";
     let label = "Low Risk";
 
-    if (score > 30) {
+    if (validScore > 30) {
         colorClass = "text-yellow-500";
         label = "Suspicious";
     }
-    if (score > 70) {
+    if (validScore > 70) {
         colorClass = "text-red-500";
         label = "Highly Misleading";
     }
@@ -45,7 +46,7 @@ export default function RiskMeter({ score }) {
                     />
                 </svg>
                 <div className="absolute inset-0 flex flex-col items-center justify-center">
-                    <span className={`text-3xl font-bold ${colorClass}`}>{score}</span>
+                    <span className={`text-3xl font-bold ${colorClass}`}>{Math.round(validScore)}</span>
                     <span className="text-xs text-gray-500 uppercase tracking-wider">Score</span>
                 </div>
             </div>

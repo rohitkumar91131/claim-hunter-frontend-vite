@@ -1,10 +1,13 @@
 import { useState, useRef, useLayoutEffect } from 'react';
-import { Search, Menu, X } from 'lucide-react';
-import { NavLink } from 'react-router-dom';
+import { Search, Menu, X, LogOut, User } from 'lucide-react';
+import { NavLink, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import ThemeToggle from './ThemeToggle';
+import { useAuth } from '../context/AuthContext';
 
 export default function Navbar() {
+    const { user, logout } = useAuth();
+    const navigate = useNavigate();
     const [isOpen, setIsOpen] = useState(false);
     const containerRef = useRef(null);
     const menuRef = useRef(null);
@@ -67,6 +70,12 @@ export default function Navbar() {
     const toggleMenu = () => setIsOpen(!isOpen);
     const closeMenu = () => setIsOpen(false);
 
+    const handleLogout = async () => {
+        await logout();
+        closeMenu();
+        navigate('/login');
+    };
+
     const linkClass = ({ isActive }) =>
         `block py-3 text-lg md:text-sm md:py-0 transition-colors duration-200 relative group ${isActive ? 'text-foreground font-medium' : 'text-muted hover:text-foreground'}`;
 
@@ -102,9 +111,25 @@ export default function Navbar() {
 
                         <ThemeToggle />
 
-                        <NavLink to="/login" className="px-5 py-2 rounded-full border border-border-custom hover:bg-foreground/5 hover:border-foreground/20 transition-all text-foreground font-medium">
-                            Sign In
-                        </NavLink>
+                        {user ? (
+                            <div className="flex items-center gap-4">
+                                <span className="text-sm text-foreground flex items-center gap-2">
+                                    <User className="w-4 h-4" />
+                                    {user.email}
+                                </span>
+                                <button
+                                    onClick={handleLogout}
+                                    className="px-4 py-2 rounded-full border border-border-custom hover:bg-danger/10 hover:text-danger hover:border-danger/30 transition-all text-muted font-medium flex items-center gap-2"
+                                >
+                                    <LogOut className="w-4 h-4" />
+                                    Logout
+                                </button>
+                            </div>
+                        ) : (
+                            <NavLink to="/login" className="px-5 py-2 rounded-full border border-border-custom hover:bg-foreground/5 hover:border-foreground/20 transition-all text-foreground font-medium">
+                                Sign In
+                            </NavLink>
+                        )}
                     </div>
 
                     {/* Mobile Hamburger */}
@@ -137,11 +162,27 @@ export default function Navbar() {
                             How It Works
                         </NavLink>
                     </div>
-                    <div ref={addToRefs} className="pt-4">
-                        <NavLink to="/login" onClick={closeMenu} className="block w-full text-center py-4 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground font-bold transition-colors border border-border-custom">
-                            Sign In
-                        </NavLink>
-                    </div>
+
+                    {user ? (
+                        <>
+                            <div ref={addToRefs}>
+                                <div className="text-lg font-medium text-foreground py-2 border-b border-border-custom">
+                                    Signed in as: {user.email}
+                                </div>
+                            </div>
+                            <div ref={addToRefs} className="pt-4">
+                                <button onClick={handleLogout} className="block w-full text-center py-4 rounded-xl bg-danger/10 text-danger font-bold transition-colors border border-danger/30">
+                                    Logout
+                                </button>
+                            </div>
+                        </>
+                    ) : (
+                        <div ref={addToRefs} className="pt-4">
+                            <NavLink to="/login" onClick={closeMenu} className="block w-full text-center py-4 rounded-xl bg-foreground/5 hover:bg-foreground/10 text-foreground font-bold transition-colors border border-border-custom">
+                                Sign In
+                            </NavLink>
+                        </div>
+                    )}
                 </div>
             </div>
         </nav>

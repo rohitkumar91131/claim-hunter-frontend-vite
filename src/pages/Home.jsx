@@ -1,13 +1,17 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import gsap from 'gsap';
+import { useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
 import InputSection from '../components/InputSection';
 import ResultsSection from '../components/ResultsSection';
+import { analyzeText } from '../api/api';
 
 export default function Home() {
+    const navigate = useNavigate();
     const [input, setInput] = useState("");
     const [isLoading, setIsLoading] = useState(false);
     const [result, setResult] = useState(null);
+    const [error, setError] = useState(null); // Add error state if needed, or use alert/toast
 
     const containerRef = useRef(null);
     const inputRef = useRef(null);
@@ -77,33 +81,42 @@ export default function Home() {
         return () => ctx.revert();
     }, []);
 
-    const handleAnalyze = () => {
+    const handleAnalyze = async () => {
+        if (!input.trim()) return;
+
         setIsLoading(true);
         setResult(null);
+        setError(null);
 
-        // Simulate AI Processing
-        setTimeout(() => {
-            setResult({
-                riskScore: 85,
-                verdict: "This text exhibits significant indicators of misinformation. The language is highly emotive and relies on several logical fallacies without providing verifiable evidence.",
-                claims: [
-                    "5G towers are responsible for spreading recent viruses.",
-                    "Government officials are holding secret meetings to control weather.",
-                    "A new study proves that water has memory."
-                ],
-                emotionalTriggers: ["shocking", "deadly", "secret", "catastrophe", "hidden truth"],
-                logicalFallacies: [
-                    { name: "False Cause", description: "Presuming that a real or perceived relationship between things means that one is the cause of the other." },
-                    { name: "Appeal to Emotion", description: "Manipulating an emotional response in place of a valid or compelling argument." }
-                ]
-            });
-            setIsLoading(false);
-
+        try {
+            const data = await analyzeText(input);
+            setResult(data);
             // Scroll to results
             setTimeout(() => {
                 window.scrollTo({ top: 500, behavior: 'smooth' });
             }, 100);
-        }, 2000);
+        } catch (err) {
+            console.error("Analysis failed:", err);
+
+            if (err.status === 401) {
+                // api.js might have thrown or we catch it here
+                navigate('/login');
+                return;
+            }
+
+            let message = "An error occurred. Please try again.";
+            if (err.status === 429) {
+                message = "Rate limit exceeded. Please wait a moment.";
+            } else if (err.status === 503) {
+                message = "AI service unavailable. Please try again later.";
+            } else if (err.message) {
+                message = err.message;
+            }
+
+            alert(message); // Simple alert for now as there is no Toast component visible
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     return (
