@@ -1,5 +1,6 @@
 import { useState, useRef, useLayoutEffect } from 'react';
 import gsap from 'gsap';
+import { toast } from 'sonner';
 import { useNavigate } from 'react-router-dom';
 import Hero from '../components/Hero';
 import InputSection from '../components/InputSection';
@@ -111,7 +112,7 @@ export default function Home() {
                 message = err.message;
             }
 
-            alert(message); // Simple alert for now as there is no Toast component visible
+            toast.error(message);
         } finally {
             setIsLoading(false);
         }
