@@ -2,6 +2,7 @@ import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { ThemeProvider } from './context/ThemeContext';
 import Home from './pages/Home';
 import HowItWorks from './pages/HowItWorks';
+import ApiDocs from './pages/ApiDocs';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
 import Dashboard from './pages/Dashboard';
@@ -18,6 +19,7 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
+            <Route path="/api-docs" element={<ApiDocs />} />
 
             {/* Protected Routes */}
             <Route element={<ProtectedRoute />}>

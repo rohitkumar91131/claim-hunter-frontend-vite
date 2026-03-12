@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
-import { BarChart2, Shield, TrendingUp, Clock, Send, Loader2, AlertTriangle, Copy, Check, Link } from 'lucide-react';
-import { toast } from 'sonner';
-import { getDashboardStats, analyzeTextDirect, analyzeTextGet } from '../api/api';
+import { BarChart2, Shield, TrendingUp, Clock, Loader2, AlertTriangle } from 'lucide-react';
+import { getDashboardStats } from '../api/api';
 import ResultCard from '../components/ResultCard';
-import ResultsSection from '../components/ResultsSection';
 
 function RiskBadge({ level }) {
     const colors = {
@@ -39,15 +37,6 @@ export default function Dashboard() {
     const [statsLoading, setStatsLoading] = useState(true);
     const [statsError, setStatsError] = useState(null);
 
-    const [directInput, setDirectInput] = useState('');
-    const [directLoading, setDirectLoading] = useState(false);
-    const [directResult, setDirectResult] = useState(null);
-
-    const [getInput, setGetInput] = useState('');
-    const [getLoading, setGetLoading] = useState(false);
-    const [getResult, setGetResult] = useState(null);
-    const [copied, setCopied] = useState(false);
-
     const containerRef = useRef(null);
 
     useLayoutEffect(() => {
@@ -78,53 +67,12 @@ export default function Dashboard() {
         fetchStats();
     }, []);
 
-    const handleDirectAnalyze = async () => {
-        if (!directInput.trim()) return;
-        setDirectLoading(true);
-        setDirectResult(null);
-        try {
-            const data = await analyzeTextDirect(directInput);
-            setDirectResult(data);
-        } catch (err) {
-            toast.error(err.message || 'Direct analysis failed.');
-        } finally {
-            setDirectLoading(false);
-        }
-    };
-
-    const getRequestUrl = getInput.trim()
-        ? `${import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'}/analyze/get?text=${encodeURIComponent(getInput)}`
-        : `${import.meta.env.VITE_BACKEND_URL || 'http://127.0.0.1:8000'}/analyze/get?text=<your+text+here>`;
-
-    const handleCopyUrl = () => {
-        navigator.clipboard.writeText(getRequestUrl).then(() => {
-            setCopied(true);
-            setTimeout(() => setCopied(false), 2000);
-        }).catch(() => {
-            toast.error('Failed to copy URL to clipboard.');
-        });
-    };
-
-    const handleGetAnalyze = async () => {
-        if (!getInput.trim()) return;
-        setGetLoading(true);
-        setGetResult(null);
-        try {
-            const data = await analyzeTextGet(getInput);
-            setGetResult(data);
-        } catch (err) {
-            toast.error(err.message || 'GET analysis failed.');
-        } finally {
-            setGetLoading(false);
-        }
-    };
-
     return (
         <div ref={containerRef} className="container mx-auto px-6 py-12 space-y-10">
             {/* Page Header */}
             <div className="dash-card">
                 <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-                <p className="text-muted mt-1">Your claim analysis overview and developer tools.</p>
+                <p className="text-muted mt-1">Your claim analysis overview.</p>
             </div>
 
             {/* Stats Overview */}
@@ -213,105 +161,6 @@ export default function Dashboard() {
                     )}
                 </>
             )}
-
-            {/* Developer Direct Analyze Panel */}
-            <div className="dash-card space-y-4">
-                <div>
-                    <h2 className="text-xl font-bold text-foreground">Developer: Direct Analyze</h2>
-                    <p className="text-muted text-sm mt-1">
-                        Test the analysis pipeline using local heuristics — <span className="text-primary font-medium">no API key required</span>.
-                        Results use the same schema as the AI endpoint.
-                    </p>
-                </div>
-
-                <div className="bg-card rounded-xl border border-border-custom p-4 space-y-3">
-                    <textarea
-                        value={directInput}
-                        onChange={(e) => setDirectInput(e.target.value)}
-                        rows={5}
-                        placeholder="Paste text to analyze here…"
-                        className="w-full bg-background text-foreground text-sm placeholder:text-muted rounded-lg border border-border-custom p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-all duration-200"
-                    />
-                    <button
-                        onClick={handleDirectAnalyze}
-                        disabled={directLoading || !directInput.trim()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        {directLoading ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Analyzing…
-                            </>
-                        ) : (
-                            <>
-                                <Send className="w-4 h-4" />
-                                Analyze (No API Key)
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                {directResult && <ResultsSection result={directResult} />}
-            </div>
-
-            {/* Developer GET Request Panel */}
-            <div className="dash-card space-y-4">
-                <div>
-                    <h2 className="text-xl font-bold text-foreground">Developer: GET Request</h2>
-                    <p className="text-muted text-sm mt-1">
-                        Make a simple <span className="text-primary font-medium">GET request</span> with your text as a query parameter and receive the analysis result directly.
-                    </p>
-                </div>
-
-                <div className="bg-card rounded-xl border border-border-custom p-4 space-y-3">
-                    <textarea
-                        value={getInput}
-                        onChange={(e) => setGetInput(e.target.value)}
-                        rows={3}
-                        placeholder="Enter text to analyze…"
-                        className="w-full bg-background text-foreground text-sm placeholder:text-muted rounded-lg border border-border-custom p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-all duration-200"
-                    />
-
-                    {/* URL Preview */}
-                    <div className="flex items-center gap-2 bg-foreground/5 rounded-lg border border-border-custom px-3 py-2">
-                        <Link className="w-4 h-4 text-muted shrink-0" />
-                        <code className="text-xs text-primary break-all flex-1 select-all">
-                            {getRequestUrl}
-                        </code>
-                        <button
-                            onClick={handleCopyUrl}
-                            className="shrink-0 p-1.5 rounded-md hover:bg-foreground/10 transition-colors"
-                            title="Copy URL"
-                        >
-                            {copied ? (
-                                <Check className="w-4 h-4 text-green-500" />
-                            ) : (
-                                <Copy className="w-4 h-4 text-muted" />
-                            )}
-                        </button>
-                    </div>
-
-                    <button
-                        onClick={handleGetAnalyze}
-                        disabled={getLoading || !getInput.trim()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        {getLoading ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Analyzing…
-                            </>
-                        ) : (
-                            <>
-                                <Send className="w-4 h-4" />
-                                Send GET Request
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                {getResult && <ResultsSection result={getResult} />}
-            </div>
         </div>
     );
 }
