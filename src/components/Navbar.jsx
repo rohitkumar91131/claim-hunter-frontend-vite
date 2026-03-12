@@ -108,6 +108,10 @@ export default function Navbar() {
                             How It Works
                             <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
                         </NavLink>
+                        <NavLink to="/api-docs" className={linkClass} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                            API Docs
+                            <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                        </NavLink>
 
                         <ThemeToggle />
 
@@ -167,6 +171,11 @@ export default function Navbar() {
                     <div ref={addToRefs}>
                         <NavLink to="/how-it-works" onClick={closeMenu} className="text-2xl font-bold text-muted hover:text-foreground block py-2 border-b border-border-custom transition-colors duration-300">
                             How It Works
+                        </NavLink>
+                    </div>
+                    <div ref={addToRefs}>
+                        <NavLink to="/api-docs" onClick={closeMenu} className="text-2xl font-bold text-muted hover:text-foreground block py-2 border-b border-border-custom transition-colors duration-300">
+                            API Docs
                         </NavLink>
                     </div>
 

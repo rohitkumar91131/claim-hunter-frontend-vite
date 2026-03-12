@@ -103,6 +103,18 @@ export async function analyzeTextDirect(text) {
     });
 }
 
+/**
+ * Analyze text via a GET request using query parameters.
+ * Designed for developers who want to integrate without a POST body.
+ * Usage: GET /analyze/get?text=<encoded_text>
+ */
+export async function analyzeTextGet(text) {
+    const params = new URLSearchParams({ text });
+    return apiFetch(`/analyze/get?${params.toString()}`, {
+        method: "GET",
+    });
+}
+
 export async function getHistory() {
     return apiFetch("/history/", {
         method: "GET",

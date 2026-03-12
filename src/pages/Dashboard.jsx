@@ -1,10 +1,8 @@
 import { useState, useEffect, useRef, useLayoutEffect } from 'react';
 import { gsap } from 'gsap';
-import { BarChart2, Shield, TrendingUp, Clock, Send, Loader2, AlertTriangle } from 'lucide-react';
-import { toast } from 'sonner';
-import { getDashboardStats, analyzeTextDirect } from '../api/api';
+import { BarChart2, Shield, TrendingUp, Clock, Loader2, AlertTriangle } from 'lucide-react';
+import { getDashboardStats } from '../api/api';
 import ResultCard from '../components/ResultCard';
-import ResultsSection from '../components/ResultsSection';
 
 function RiskBadge({ level }) {
     const colors = {
@@ -39,10 +37,6 @@ export default function Dashboard() {
     const [statsLoading, setStatsLoading] = useState(true);
     const [statsError, setStatsError] = useState(null);
 
-    const [directInput, setDirectInput] = useState('');
-    const [directLoading, setDirectLoading] = useState(false);
-    const [directResult, setDirectResult] = useState(null);
-
     const containerRef = useRef(null);
 
     useLayoutEffect(() => {
@@ -73,26 +67,12 @@ export default function Dashboard() {
         fetchStats();
     }, []);
 
-    const handleDirectAnalyze = async () => {
-        if (!directInput.trim()) return;
-        setDirectLoading(true);
-        setDirectResult(null);
-        try {
-            const data = await analyzeTextDirect(directInput);
-            setDirectResult(data);
-        } catch (err) {
-            toast.error(err.message || 'Direct analysis failed.');
-        } finally {
-            setDirectLoading(false);
-        }
-    };
-
     return (
         <div ref={containerRef} className="container mx-auto px-6 py-12 space-y-10">
             {/* Page Header */}
             <div className="dash-card">
                 <h1 className="text-3xl font-bold text-foreground">Dashboard</h1>
-                <p className="text-muted mt-1">Your claim analysis overview and developer tools.</p>
+                <p className="text-muted mt-1">Your claim analysis overview.</p>
             </div>
 
             {/* Stats Overview */}
@@ -181,46 +161,6 @@ export default function Dashboard() {
                     )}
                 </>
             )}
-
-            {/* Developer Direct Analyze Panel */}
-            <div className="dash-card space-y-4">
-                <div>
-                    <h2 className="text-xl font-bold text-foreground">Developer: Direct Analyze</h2>
-                    <p className="text-muted text-sm mt-1">
-                        Test the analysis pipeline using local heuristics — <span className="text-primary font-medium">no API key required</span>.
-                        Results use the same schema as the AI endpoint.
-                    </p>
-                </div>
-
-                <div className="bg-card rounded-xl border border-border-custom p-4 space-y-3">
-                    <textarea
-                        value={directInput}
-                        onChange={(e) => setDirectInput(e.target.value)}
-                        rows={5}
-                        placeholder="Paste text to analyze here…"
-                        className="w-full bg-background text-foreground text-sm placeholder:text-muted rounded-lg border border-border-custom p-3 focus:outline-none focus:ring-2 focus:ring-primary/50 focus:border-primary resize-none transition-all duration-200"
-                    />
-                    <button
-                        onClick={handleDirectAnalyze}
-                        disabled={directLoading || !directInput.trim()}
-                        className="flex items-center gap-2 px-5 py-2.5 bg-primary text-white rounded-xl font-semibold shadow-lg shadow-primary/20 hover:opacity-90 transition-all active:scale-[0.98] disabled:opacity-60 disabled:cursor-not-allowed"
-                    >
-                        {directLoading ? (
-                            <>
-                                <Loader2 className="w-4 h-4 animate-spin" />
-                                Analyzing…
-                            </>
-                        ) : (
-                            <>
-                                <Send className="w-4 h-4" />
-                                Analyze (No API Key)
-                            </>
-                        )}
-                    </button>
-                </div>
-
-                {directResult && <ResultsSection result={directResult} />}
-            </div>
         </div>
     );
 }
