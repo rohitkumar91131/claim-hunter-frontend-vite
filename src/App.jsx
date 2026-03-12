@@ -4,8 +4,10 @@ import Home from './pages/Home';
 import HowItWorks from './pages/HowItWorks';
 import Login from './pages/Login';
 import Signup from './pages/Signup';
+import Dashboard from './pages/Dashboard';
 import MainLayout from './layouts/MainLayout';
 import AuthLayout from './layouts/AuthLayout';
+import ProtectedRoute from './components/ProtectedRoute';
 import { Toaster } from 'sonner';
 
 function App() {
@@ -16,6 +18,11 @@ function App() {
           <Route element={<MainLayout />}>
             <Route path="/" element={<Home />} />
             <Route path="/how-it-works" element={<HowItWorks />} />
+
+            {/* Protected Routes */}
+            <Route element={<ProtectedRoute />}>
+              <Route path="/dashboard" element={<Dashboard />} />
+            </Route>
           </Route>
 
           <Route element={<AuthLayout />}>
