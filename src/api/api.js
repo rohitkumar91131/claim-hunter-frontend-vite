@@ -92,6 +92,17 @@ export async function analyzeText(text) {
     });
 }
 
+/**
+ * Analyze text using local heuristics — no Google API key required.
+ * Designed for developers who want to test without configuring an AI service.
+ */
+export async function analyzeTextDirect(text) {
+    return apiFetch("/analyze/direct", {
+        method: "POST",
+        body: JSON.stringify({ text }),
+    });
+}
+
 export async function getHistory() {
     return apiFetch("/history/", {
         method: "GET",
@@ -100,6 +111,14 @@ export async function getHistory() {
 
 export async function getHistoryById(id) {
     return apiFetch(`/history/${id}`, {
+        method: "GET",
+    });
+}
+
+// --- Dashboard APIs ---
+
+export async function getDashboardStats() {
+    return apiFetch("/dashboard/stats", {
         method: "GET",
     });
 }

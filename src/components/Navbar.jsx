@@ -1,5 +1,5 @@
 import { useState, useRef, useLayoutEffect } from 'react';
-import { Search, Menu, X, LogOut, User } from 'lucide-react';
+import { Search, Menu, X, LogOut, User, LayoutDashboard } from 'lucide-react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import gsap from 'gsap';
 import ThemeToggle from './ThemeToggle';
@@ -113,6 +113,13 @@ export default function Navbar() {
 
                         {user ? (
                             <div className="flex items-center gap-4">
+                                <NavLink to="/dashboard" className={linkClass} onMouseEnter={handleMouseEnter} onMouseLeave={handleMouseLeave}>
+                                    <span className="flex items-center gap-1.5">
+                                        <LayoutDashboard className="w-4 h-4" />
+                                        Dashboard
+                                    </span>
+                                    <span className="absolute -bottom-1 left-0 w-0 h-0.5 bg-primary transition-all duration-300 group-hover:w-full"></span>
+                                </NavLink>
                                 <span className="text-sm text-foreground flex items-center gap-2">
                                     <User className="w-4 h-4" />
                                     {user.email}
@@ -165,6 +172,12 @@ export default function Navbar() {
 
                     {user ? (
                         <>
+                            <div ref={addToRefs}>
+                                <NavLink to="/dashboard" onClick={closeMenu} className="text-2xl font-bold text-muted hover:text-foreground flex items-center gap-2 py-2 border-b border-border-custom transition-colors duration-300">
+                                    <LayoutDashboard className="w-5 h-5" />
+                                    Dashboard
+                                </NavLink>
+                            </div>
                             <div ref={addToRefs}>
                                 <div className="text-lg font-medium text-foreground py-2 border-b border-border-custom">
                                     Signed in as: {user.email}
